@@ -28,6 +28,17 @@ My technical-art background shapes the tools I build: practical workflows, inter
 
 <a href="https://github.com/Samukashvili/LUMEN-PS">
   <picture>
+    <source media="(max-width: 600px) and (prefers-reduced-motion: reduce)" srcset="assets/lumen-process-mobile.svg">
+    <source media="(prefers-reduced-motion: reduce)" srcset="assets/lumen-process.svg">
+    <source media="(max-width: 600px)" srcset="assets/lumen-process-mobile.gif">
+    <img src="assets/lumen-process.gif" width="100%" alt="Animated LUMEN-PS workflow: rotate the subject for four scans under a fixed scanner light, align the same surface points, solve photometric stereo, and export albedo, normal, roughness, height, and alpha maps.">
+  </picture>
+</a>
+
+<sub>How it works: four rotations → aligned observations → surface reconstruction → material maps.</sub>
+
+<a href="https://github.com/Samukashvili/LUMEN-PS">
+  <picture>
     <source media="(max-width: 600px) and (prefers-reduced-motion: reduce)" srcset="assets/lumen-showcase-mobile.jpg">
     <source media="(prefers-reduced-motion: reduce)" srcset="assets/lumen-showcase.jpg">
     <source media="(max-width: 600px)" srcset="assets/lumen-showcase-mobile.gif">
@@ -47,8 +58,10 @@ Built with **Python / CUDA**, with a Windows app and CLI, rigid and non-rigid re
 
 <a href="https://samukashvili.ge/products.html">
   <picture>
-    <source media="(max-width: 600px)" srcset="assets/project-systems-mobile.svg">
-    <img src="assets/project-systems.svg" width="100%" alt="Custom illustrations of four software systems: WebGL SceneBuilder exports an edited scene to a browser; MarchingWorld streams terrain with varying levels of detail; Live Stereo Depth matches two camera views; Collection Zones groups spatial objects into collections.">
+    <source media="(max-width: 600px) and (prefers-reduced-motion: reduce)" srcset="assets/project-systems-mobile.svg">
+    <source media="(prefers-reduced-motion: reduce)" srcset="assets/project-systems.svg">
+    <source media="(max-width: 600px)" srcset="assets/project-systems-mobile.gif">
+    <img src="assets/project-systems.gif" width="100%" alt="Animated software illustrations: SceneBuilder keeps editor and browser scenes in sync; MarchingWorld varies chunk mesh density as the viewer moves over hills and valleys, with a Surface Nets cell-to-quad diagram; Stereo Depth pairs camera observations; Collection Zones updates a balanced collection tree as an object changes zones.">
   </picture>
 </a>
 
