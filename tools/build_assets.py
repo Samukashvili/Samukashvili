@@ -27,7 +27,7 @@ def terrain():
         h += .63*math.exp(-((u-.80)**2/.034+(v-.72)**2/.06))
         h += .25*math.sin(u*10+v*5)*math.sin(v*7)
         return 790+(u-v)*245,174+(u+v)*107-h*139
-    output = ['<g transform="translate(86 55)">']
+    output = ['<g transform="translate(165 25) scale(.9)">']
     for j in range(n):
         for i in range(n):
             points=[p(i,j),p(i+1,j),p(i+1,j+1),p(i,j+1)]
@@ -112,21 +112,108 @@ def showcase(portfolio,mobile=False):
         sample=ImageOps.contain(frame,(200,200),Image.Resampling.LANCZOS)
         palette_board.paste(sample,((i%6)*200,(i//6)*200))
     palette=palette_board.quantize(colors=256)
-    indexed=[im.quantize(palette=palette,dither=Image.Dither.FLOYDSTEINBERG) for im in frames]
+    # Quantize the animated panel independently: diffusion from its changing
+    # pixels must not alter the index values of the static recovered maps.
+    indexed=[]
+    static=canvas.quantize(palette=palette,dither=Image.Dither.FLOYDSTEINBERG)
+    x,y,w,h=boxes[0]
+    for im in frames:
+        result=static.copy()
+        animated=im.crop((x,y,x+w,y+h)).quantize(palette=palette,dither=Image.Dither.FLOYDSTEINBERG)
+        result.paste(animated,(x,y))
+        indexed.append(result)
     indexed[0].save(OUT/f'lumen-showcase{suffix}.gif',save_all=True,append_images=indexed[1:],duration=durations,loop=0,optimize=True,disposal=1)
 
-def products(portfolio,mobile=False):
-    canvas=Image.new('RGB',(720,1240) if mobile else (1200,330),BG)
-    draw=ImageDraw.Draw(canvas)
-    entries=[('MarchingWorld/lod-overview-color.webp','MarchingWorld','C# / HLSL / UNITY'),
-             ('StereoDepth/stereo-depth-demo-poster.webp','Live Stereo Depth','JAVA / OPENGL ES'),
-             ('Collection Zones/CollectionZonesThumbnail_Black.png','Collection Zones','PYTHON / BLENDER')]
-    boxes=[(20,20,680,340),(20,430,680,340),(20,840,680,340)] if mobile else [(18,18,376,215),(412,18,376,215),(806,18,376,215)]
-    for (source,title,stack),(x,y,w,h) in zip(entries,boxes):
-        contain(canvas,Image.open(portfolio/f'assets/images/{source}'),(x,y,w,h))
-        draw.text((x+2,y+h+10),title,font=font(29 if mobile else 25,bold=True),fill=WHITE)
-        draw.text((x+2,y+h+52),stack,font=font(20 if mobile else 18,mono=True),fill=MINT)
-    canvas.save(OUT/('products-mobile.jpg' if mobile else 'products.jpg'),quality=90,optimize=True)
+def box(x,y,w,h,fill='#0b1218',stroke='#36464d',radius=8):
+    return f'<rect x="{x}" y="{y}" width="{w}" height="{h}" rx="{radius}" fill="{fill}" stroke="{stroke}"/>'
+
+def arrow(x,y,end):
+    return f'<path d="M{x} {y}H{end}m-7 -6 7 6-7 6" fill="none" stroke="{MINT}" stroke-width="2"/>'
+
+def cube(x,y,s,color):
+    points=f'{x},{y-s*.5} {x+s},{y} {x+s},{y+s} {x},{y+s*1.5} {x-s},{y+s} {x-s},{y}'
+    return f'<polygon points="{points}" fill="{color}" fill-opacity=".10" stroke="{color}" stroke-width="1.7"/><path d="M{x-s} {y}l{s} {s*.5} {s} {-s*.5}M{x} {y+s*.5}v{s}m0 {-s}v{-s}" fill="none" stroke="{color}" stroke-width="1.7"/>'
+
+def systems(mobile=False):
+    w,h=(720,1820) if mobile else (1200,834)
+    parts=[f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-labelledby="title desc">',
+           '<title id="title">The systems behind the software</title>',
+           '<desc id="desc">Conceptual illustrations of four projects: a WebGL editor exports to the browser; terrain streams with levels of detail; two cameras reconstruct metric depth; spatial zones group scene objects.</desc>',
+           '<defs><linearGradient id="depth" x1="0" y1="0" x2="1" y2="1"><stop stop-color="#5675e2"/><stop offset=".4" stop-color="#67d3db"/><stop offset=".7" stop-color="#b1f4cf"/><stop offset="1" stop-color="#e9c989"/></linearGradient><linearGradient id="screen" x2="1" y2="1"><stop stop-color="#193038"/><stop offset="1" stop-color="#121a26"/></linearGradient></defs>',
+           f'<rect width="{w}" height="{h}" rx="14" fill="{BG}"/>',
+           text(26,38,'THE SYSTEMS BEHIND THE SOFTWARE',20,MINT,spacing=1.5,mono=True)]
+    titles=[('WebGL SceneBuilder','TYPESCRIPT / WEBGL'),('MarchingWorld','C# / HLSL / UNITY'),('Live Stereo Depth','JAVA / OPENGL ES'),('Collection Zones','PYTHON / BLENDER')]
+    scale=1.2 if mobile else 1
+    positions=[(24,70+i*434) for i in range(4)] if mobile else [(24,72),(616,72),(24,454),(616,454)]
+    for index,((title,stack),(x,y)) in enumerate(zip(titles,positions)):
+        card=[f'<g transform="translate({x} {y}) scale({scale})">',box(0,0,560,354,'#111a22','#26383f',12),
+              text(24,38,title,27,weight=600),text(24,67,stack,15,MUTED,spacing=1,mono=True)]
+        if index==0:
+            card += [box(24,101,248,182),box(24,101,248,27,'#1c2932'),
+                     text(35,119,'scene.editor',12,MUTED,mono=True),
+                     '<circle cx="250" cy="114" r="3" fill="#b1f4cf"/>',
+                     box(35,139,62,130,'#121d25','#26353e',3),
+                     text(44,157,'SCENE',10,MUTED,mono=True),
+                     '<g stroke="#577581" stroke-width="3"><path d="M46 176H83M53 193H83M53 210H76M46 238H81M46 256H69"/></g>',
+                     box(107,138,154,131,'url(#screen)','#26353e',3),
+                     '<path d="M109 235H259M109 251H259M143 269L179 208L213 269" fill="none" stroke="#426065" stroke-opacity=".5"/>',
+                     cube(181,177,33,'#a4ccf0'),
+                     '<path d="M228 247h17m-8 -8v17" stroke="#b1f4cf" stroke-width="1.5"/>',
+                     arrow(284,193,311),box(323,112,213,160),box(323,112,213,26,'#1c2932'),
+                     '<g fill="#74938e"><circle cx="337" cy="125" r="3"/><circle cx="347" cy="125" r="3"/><circle cx="357" cy="125" r="3"/></g>',
+                     text(387,130,'your.site',11,MUTED,mono=True),
+                     '<ellipse cx="430" cy="242" rx="57" ry="8" fill="#244940" opacity=".4"/>',
+                     cube(430,181,36,MINT),text(347,254,'self-contained bundle',12,MUTED,mono=True),
+                     text(24,329,'EDIT → OPTIMIZE → EXPORT',17,MINT,mono=True)]
+        elif index==1:
+            # Chunk spacing illustrates LOD; heights are decorative, not benchmark data.
+            def point(i,j):
+                u,v=i/12,j/12
+                z=38*math.sin(u*math.pi)*math.sin(v*math.pi)+15*math.cos(u*7+v*4)
+                return 282+(u-v)*224,116+(u+v)*87-z
+            for j in range(12):
+                for i in range(12):
+                    p=[point(i,j),point(i+1,j),point(i+1,j+1),point(i,j+1)]
+                    fine=3<=i<9 and 3<=j<9
+                    color='#5b8e84' if fine else '#384f65'
+                    pts=' '.join(f'{a:.1f},{b:.1f}' for a,b in p)
+                    card.append(f'<polygon points="{pts}" fill="{color}" fill-opacity=".23" stroke="{MINT if fine else "#7d96b4"}" stroke-opacity=".55" stroke-width=".75"/>')
+                    if fine:
+                        a,b=p[0],p[2]
+                        card.append(f'<path d="M{a[0]:.1f} {a[1]:.1f}L{b[0]:.1f} {b[1]:.1f}" stroke="{MINT}" stroke-opacity=".24"/>')
+            card += ['<ellipse cx="282" cy="196" rx="108" ry="38" fill="none" stroke="#b1f4cf" stroke-dasharray="5 6" opacity=".6"/>',
+                     '<path d="M282 180v-26" stroke="#edf3ee"/><circle cx="282" cy="180" r="4" fill="#edf3ee"/>',
+                     text(246,145,'VIEWER',13,WHITE,mono=True),
+                     text(31,142,'COARSE',12,MUTED,mono=True),text(366,268,'FINE',13,MINT,mono=True),
+                     text(24,329,'STREAM CHUNKS / REUSE TOPOLOGY',17,MINT,mono=True)]
+        elif index==2:
+            for cx,label in [(79,'WIDE'),(204,'ULTRAWIDE')]:
+                card += [box(cx-46,116,92,88,'#172b33','#628080',9),
+                         f'<circle cx="{cx}" cy="157" r="26" fill="#0b151b" stroke="#7a9eab"/><circle cx="{cx}" cy="157" r="15" fill="#1e3c4d" stroke="#b1f4cf"/>',
+                         f'<circle cx="{cx-5}" cy="152" r="4" fill="#edf3ee" opacity=".55"/>',
+                         text(cx-42,224,label,12,MUTED,mono=True),
+                         f'<path d="M{cx} 206L140 273" fill="none" stroke="#87b1a6" stroke-dasharray="4 4"/>']
+            card += ['<circle cx="140" cy="273" r="6" fill="#b1f4cf"/>',arrow(267,187,306),
+                     box(318,103,218,182,'url(#screen)'),
+                     '<g fill="#315f82" opacity=".6"><rect x="335" y="136" width="26" height="32"/><rect x="490" y="124" width="26" height="55"/><rect x="342" y="230" width="38" height="31"/></g>',
+                     '<circle cx="425" cy="150" r="23" fill="url(#depth)"/><path d="M398 179Q425 164 452 179L469 252Q425 275 381 252Z" fill="url(#depth)"/>',
+                     '<rect x="517" y="147" width="6" height="105" rx="3" fill="url(#depth)"/>',
+                     text(332,276,'METRIC DEPTH',12,MUTED,mono=True),text(24,329,'PAIR → RECTIFY → MATCH → FILTER',17,MINT,mono=True)]
+        else:
+            card += ['<path d="M24 245L150 291L279 237L151 191Z" fill="none" stroke="#32474f"/>',
+                     cube(101,155,49,'#a7b2ed'),cube(227,147,39,MINT),
+                     '<circle cx="89" cy="187" r="12" fill="#a7b2ed"/><path d="M115 175l12 7v15l-12 7-12-7v-15Z" fill="#a7b2ed" opacity=".6"/>',
+                     '<circle cx="224" cy="173" r="10" fill="#b1f4cf"/><path d="M236 187l10 15h-20Z" fill="#b1f4cf" opacity=".65"/>',
+                     arrow(285,188,317),box(331,109,205,176),
+                     text(346,132,'COLLECTIONS',12,MUTED,mono=True),
+                     '<path d="M350 159h11m-6 -5v10M364 160H511M365 170v25h15M365 190h15" stroke="#a7b2ed" stroke-width="2"/>',
+                     text(387,182,'Object A',14,WHITE),text(387,203,'Object B',14,MUTED),
+                     '<path d="M350 224h11m-6 -5v10M364 225H511M365 235v25h15M365 252h15" stroke="#b1f4cf" stroke-width="2"/>',
+                     text(387,247,'Object C',14,WHITE),text(387,268,'Object D',14,MUTED),
+                     text(24,329,'POSITION → ZONE → COLLECTION',17,MINT,mono=True)]
+        parts += card+['</g>']
+    parts.append('</svg>')
+    (OUT/('project-systems-mobile.svg' if mobile else 'project-systems.svg')).write_text('\n'.join(parts),encoding='utf-8')
 
 if __name__=='__main__':
     parser=ArgumentParser(description=__doc__)
@@ -136,6 +223,6 @@ if __name__=='__main__':
     for mobile in [False,True]:
         header(mobile)
         showcase(args.portfolio,mobile)
-        products(args.portfolio,mobile)
+        systems(mobile)
     for f in sorted(OUT.iterdir()):
         if f.is_file(): print(f'{f.name}: {f.stat().st_size:,} bytes')

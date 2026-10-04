@@ -4,7 +4,7 @@ All profile images are stored in this repository. The README does not depend on 
 
 - `header.svg` and `header-mobile.svg`: original procedural graphics created for this profile. No scripts, external images, or embedded fonts.
 - `lumen-showcase*`: composed from the real kiwi leaf relighting animation and recovered albedo, normal, and height previews in Giorgi's portfolio. The original frame durations and all 36 animation frames are preserved. JPEG alternatives are selected for visitors who request reduced motion.
-- `products*`: real product visuals for MarchingWorld's LOD topology, the Live Stereo Depth prototype, and the Collection Zones add-on. Both layouts preserve the complete source images.
+- `project-systems*`: original SVG illustrations of WebGL SceneBuilder's editor/export workflow, MarchingWorld's terrain LOD, Live Stereo Depth's dual-camera reconstruction, and Collection Zones' spatial grouping. These are conceptual diagrams, not application screenshots or measured results.
 
 The desktop and mobile artwork layouts are selected with native HTML `picture` elements. Narrative text, project descriptions, and links remain ordinary GitHub Markdown.
 

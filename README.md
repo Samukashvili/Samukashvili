@@ -47,8 +47,8 @@ Built with **Python / CUDA**, with a Windows app and CLI, rigid and non-rigid re
 
 <a href="https://samukashvili.ge/products.html">
   <picture>
-    <source media="(max-width: 600px)" srcset="assets/products-mobile.jpg">
-    <img src="assets/products.jpg" width="100%" alt="Software by Giorgi: MarchingWorld's terrain LOD topology, Live Stereo Depth's metric depth view, and the Collection Zones Blender add-on.">
+    <source media="(max-width: 600px)" srcset="assets/project-systems-mobile.svg">
+    <img src="assets/project-systems.svg" width="100%" alt="Custom illustrations of four software systems: WebGL SceneBuilder exports an edited scene to a browser; MarchingWorld streams terrain with varying levels of detail; Live Stereo Depth matches two camera views; Collection Zones groups spatial objects into collections.">
   </picture>
 </a>
 
