@@ -2,7 +2,7 @@
 
 All profile images are stored in this repository. The README does not depend on image widgets, external badge services, or portfolio image URLs.
 
-- `header.svg` and `header-mobile.svg`: original procedural graphics created for this profile. No scripts, external images, or embedded fonts.
+- `header*`: a work-led animated banner featuring LUMEN-PS scanning and material maps, SceneBuilder's editor-to-browser export, and Collection Zones' spatial automation. Each workflow holds for four seconds in a 12-second loop. SVG stills support reduced motion. No scripts, external images, or embedded fonts.
 - `lumen-showcase*`: composed from the real kiwi leaf relighting animation and recovered albedo, normal, and height previews in Giorgi's portfolio. The original frame durations and all 36 animation frames are preserved. JPEG alternatives are selected for visitors who request reduced motion.
 - `lumen-process*`: a 12-second illustrated walkthrough of four scanner captures, registration, photometric stereo, and material-map export. GIFs play in the README; complete SVG stills serve reduced-motion readers.
 - `project-systems*`: animated illustrations of WebGL SceneBuilder's synchronized editor/export, MarchingWorld's terrain LOD and Surface Nets cell vertices, Live Stereo Depth's paired observations, and Collection Zones' changing spatial membership. The collection tree uses identical branch geometry for both groups.
@@ -16,6 +16,7 @@ To rebuild using a local copy of the portfolio, install Pillow and the Node.js `
 ```powershell
 python tools/build_assets.py --portfolio 'E:\CodingProjects\MyPortfolio'
 python tools/illustrate_projects.py
+python tools/banner_art.py
 node tools/render_animations.cjs
 python tools/encode_animations.py
 ```

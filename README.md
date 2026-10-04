@@ -1,7 +1,9 @@
 <a href="https://samukashvili.ge/">
   <picture>
-    <source media="(max-width: 600px)" srcset="assets/header-mobile.svg">
-    <img src="assets/header.svg" width="100%" alt="Giorgi Samukashvili — software developer and technical artist in Tbilisi, Georgia. Ideas, engineered.">
+    <source media="(max-width: 600px) and (prefers-reduced-motion: reduce)" srcset="assets/header-mobile.svg">
+    <source media="(prefers-reduced-motion: reduce)" srcset="assets/header.svg">
+    <source media="(max-width: 600px)" srcset="assets/header-mobile.gif">
+    <img src="assets/header.gif" width="100%" alt="Giorgi Samukashvili — software developer in Tbilisi, Georgia. Animated examples of LUMEN-PS turning scans into material maps, SceneBuilder exporting a scene to the browser, and Collection Zones organizing objects by position.">
   </picture>
 </a>
 
@@ -90,7 +92,7 @@ A spatial organization add-on that assigns objects to collections by position, w
 ## 03 / More open-source experiments
 
 - **[LaunchPoint](https://github.com/Samukashvili/LaunchPoint)** — Monte Carlo viewshed intersection on real terrain, estimating a drone operator's location from sightings. `Python`
-- **[VoiceReady](https://github.com/Samukashvili/VoiceReady)** — a voice-command assistant for Ready or Not, combining read-only game-state detection with input emulation. `C#`
+- **[VoiceReady](https://github.com/Samukashvili/VoiceReady)** — a voice-command assistant for Ready or Not, combining read-only game-state detection with input emulation. `C#` **Currently broken:** a recent Ready or Not update invalidated its pointer addresses; those addresses need to be relocated before the software can work again.
 - **[RC-N1 Controller Bridge](https://github.com/Samukashvili/RC-N1_ControllerBridge)** — turns a DJI RC-N1 remote into a low-latency virtual Xbox 360 controller for simulators and games. `Python`
 
 <br>

@@ -7,7 +7,10 @@ const root = path.resolve(__dirname, '..');
 const sources = path.join(root, '.preview', 'animation-frames');
 
 (async () => {
-  for (const name of ['lumen-process', 'lumen-process-mobile', 'project-systems', 'project-systems-mobile']) {
+  const supported = ['header', 'header-mobile', 'lumen-process', 'lumen-process-mobile', 'project-systems', 'project-systems-mobile'];
+  const selected = process.argv.slice(2);
+  for (const name of selected.length ? selected : supported) {
+    if (!supported.includes(name)) throw new Error(`Unknown storyboard: ${name}`);
     const dir = path.join(sources, name);
     const frames = (await fs.readdir(dir)).filter(name => /^\d{3}\.svg$/.test(name)).sort();
     // Bound memory while rendering independent frame images.

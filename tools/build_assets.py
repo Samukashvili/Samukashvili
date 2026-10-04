@@ -1,8 +1,6 @@
 """Build profile assets: python tools/build_assets.py --portfolio PATH (Pillow required)."""
 from argparse import ArgumentParser
 from pathlib import Path
-import math
-from xml.sax.saxutils import escape
 from PIL import Image, ImageDraw, ImageFont, ImageOps, ImageSequence
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -13,68 +11,9 @@ def font(size, bold=False, mono=False):
     name = 'consola.ttf' if mono else 'segoeuib.ttf' if bold else 'segoeui.ttf'
     return ImageFont.truetype(str(Path('C:/Windows/Fonts') / name), size)
 
-def text(x, y, value, size=20, color=WHITE, weight=400, spacing=None, mono=False):
-    family = 'Consolas, monospace' if mono else 'Segoe UI, Arial, sans-serif'
-    tracking = f' letter-spacing="{spacing}"' if spacing else ''
-    return f'<text x="{x}" y="{y}" fill="{color}" font-family="{family}" font-size="{size}" font-weight="{weight}"{tracking}>{escape(value)}</text>'
-
-def terrain():
-    """A shaded height field with normal-map-inspired colors."""
-    n = 28
-    def p(i,j):
-        u,v = i/n,j/n
-        h = math.exp(-((u-.43)**2/.06+(v-.45)**2/.10))
-        h += .63*math.exp(-((u-.80)**2/.034+(v-.72)**2/.06))
-        h += .25*math.sin(u*10+v*5)*math.sin(v*7)
-        return 790+(u-v)*245,174+(u+v)*107-h*139
-    output = ['<g transform="translate(165 25) scale(.9)">']
-    for j in range(n):
-        for i in range(n):
-            points=[p(i,j),p(i+1,j),p(i+1,j+1),p(i,j+1)]
-            bright=max(0,min(1,.45+(p(i,j)[1]-p(i+1,j)[1])*.065))
-            a,b=((93,107,165),(183,169,228)) if j/n>.54 else ((88,148,180),(177,244,207))
-            c=tuple(int(a[k]*(1-bright)+b[k]*bright) for k in range(3))
-            color='#%02x%02x%02x'%c
-            pts=' '.join(f'{x:.2f},{y:.2f}' for x,y in points)
-            output.append(f'<polygon points="{pts}" fill="{color}" stroke="#0b1822" stroke-opacity=".42" stroke-width=".7"/>')
-    return ''.join(output)+ '</g>'
-
 def header(mobile=False):
-    w,h=(720,490) if mobile else (1200,440)
-    body=[f'<svg xmlns="http://www.w3.org/2000/svg" width="{w}" height="{h}" viewBox="0 0 {w} {h}" role="img" aria-labelledby="title desc">',
-          '<title id="title">Giorgi Samukashvili — Ideas, engineered.</title>',
-          '<desc id="desc">Software developer based in Tbilisi, Georgia. A procedural terrain surface represents GPU programming and real-time systems.</desc>',
-          '<defs><radialGradient id="glow"><stop stop-color="#224b45" stop-opacity=".55"/><stop offset="1" stop-color="#0b1218" stop-opacity="0"/></radialGradient><pattern id="dots" width="26" height="26" patternUnits="userSpaceOnUse"><circle cx="1" cy="1" r="1" fill="#98b8b5" opacity=".12"/></pattern></defs>',
-          f'<rect width="{w}" height="{h}" rx="16" fill="{BG}"/>',
-          f'<rect width="{w}" height="{h}" rx="16" fill="url(#dots)"/>']
-    if mobile:
-        body += ['<ellipse cx="555" cy="175" rx="235" ry="180" fill="url(#glow)"/>',
-                 '<g opacity=".50" transform="translate(-180 -11) scale(.78)">'+terrain()+'</g>',
-                 f'<path d="M36 46H62" stroke="{MINT}" stroke-width="3"/>',
-                 text(76,52,'IDEAS, ENGINEERED.',19,MINT,spacing=3,mono=True),
-                 text(36,161,'Giorgi',77,weight=600,spacing=-3),
-                 text(36,247,'Samukashvili',76,weight=600,spacing=-3),
-                 text(38,309,'Software developer',27,MINT),
-                 text(38,357,'Computer vision. Real-time systems.',21,MUTED),
-                 text(38,389,'Turning complex problems into tools.',21,MUTED),
-                 '<path d="M36 422H684" stroke="#30413f"/>',
-                 text(38,456,'TBILISI, GEORGIA',17,MUTED,spacing=1,mono=True),
-                 text(456,456,'samukashvili.ge',18,MINT,mono=True)]
-    else:
-        body += ['<ellipse cx="910" cy="220" rx="360" ry="230" fill="url(#glow)"/>',
-                 '<g fill="none" stroke="#809d94" stroke-opacity=".17"><path d="M666 247L876 345L1160 227L950 129Z"/><path d="M666 273L876 371L1160 253"/><path d="M666 299L876 397L1160 279"/></g>',
-                 terrain(),
-                 f'<path d="M52 54H82" stroke="{MINT}" stroke-width="3"/>',
-                 text(96,60,'IDEAS, ENGINEERED.',19,MINT,spacing=3,mono=True),
-                 text(50,167,'Giorgi',82,weight=600,spacing=-3),
-                 text(50,253,'Samukashvili',80,weight=600,spacing=-4),
-                 text(54,305,'Software developer',27,MINT),
-                 text(54,351,'Computer vision. GPU systems. Developer tools.',20,MUTED),
-                 text(726,63,'CODE / VISION / SYSTEMS',15,MUTED,spacing=1.4,mono=True),
-                 '<path d="M52 381H1148" stroke="#30413f"/>',
-                 text(54,412,'TBILISI, GEORGIA',16,MUTED,spacing=1,mono=True),
-                 text(940,412,'samukashvili.ge',18,MINT,mono=True)]
-    (OUT/('header-mobile.svg' if mobile else 'header.svg')).write_text('\n'.join(body+['</svg>']),encoding='utf-8')
+    from banner_art import banner_svg
+    (OUT/('header-mobile.svg' if mobile else 'header.svg')).write_text(banner_svg(2.1,mobile),encoding='utf-8')
 
 def contain(canvas,image,box):
     x,y,w,h=box

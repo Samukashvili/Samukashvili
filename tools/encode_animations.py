@@ -1,9 +1,15 @@
 """Encode deterministic SVG renders into GitHub-friendly GIF animations (Pillow)."""
 from pathlib import Path
+import argparse
 from PIL import Image, ImageOps
 
 ROOT=Path(__file__).resolve().parents[1]
-for name in ['lumen-process','lumen-process-mobile','project-systems','project-systems-mobile']:
+supported=['header','header-mobile','lumen-process','lumen-process-mobile','project-systems','project-systems-mobile']
+parser=argparse.ArgumentParser(description=__doc__)
+parser.add_argument('storyboards',nargs='*',help='Names to encode; default: all storyboards')
+args=parser.parse_args()
+for name in args.storyboards or supported:
+    if name not in supported: parser.error(f'Unknown storyboard: {name}')
     sources=sorted((ROOT/'.preview/animation-frames'/name).glob('[0-9][0-9][0-9].png'))
     assert len(sources)==96, f'{name}: expected the complete 12-second storyboard'
     # Build one palette from the whole loop so colors never change between frames.
